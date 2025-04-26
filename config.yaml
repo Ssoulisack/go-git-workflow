@@ -1,0 +1,24 @@
+App:
+  port:
+
+database:
+  dbhost:
+  dbport:
+  username:
+  password:
+  dbname:
+
+file:
+  host:
+  port:
+  key:
+  bucket:
+  path_ip:
+
+help:
+  path_wa:
+  path_ip:
+
+jwt:
+  access_token:
+  refresh_token:
