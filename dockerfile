@@ -12,4 +12,4 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN go build -o /go/bin/app -v ./cmd/main.go
+RUN go build -o /go/bin/app -v ./ .
