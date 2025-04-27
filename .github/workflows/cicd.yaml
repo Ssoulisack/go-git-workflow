@@ -3,7 +3,7 @@ name: Go CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
-    # tags: ['v*.*.*']  # match any version like v1.0.0, v1.2.3
+    # tags: ['v*.*.*']  # match any version like v1.0.0, v1.2.0
 
 env:
   APP_NAME: go-fiber
