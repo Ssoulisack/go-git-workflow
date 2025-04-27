@@ -18,6 +18,6 @@ func App() *Application {
 	app.Env = NewEnv()
 	GlobalEnv = *NewEnv()
 	app.Fiber = NewFiber()
-	app.DB = NewDatabaseConnection(app.Env)
+	app.DB = NewDatabaseConnectionPostgres(app.Env)
 	return app
 }

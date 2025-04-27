@@ -18,5 +18,6 @@ func NewUserRouter(router fiber.Router, db *gorm.DB) {
 		return ctx.Next()
 	})
 
-	userRoute.Get("/", userCtrl.GetAllUsers)
+	userRoute.Post("/", userCtrl.CreateUser)
+	userRoute.Get("/:id", userCtrl.GetUserByID)
 }

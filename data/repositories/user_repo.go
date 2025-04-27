@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"go-fiber/api/rest/middleware"
+	"go-fiber/core/utilities"
 	"go-fiber/domain/entities"
 
 	"gorm.io/gorm"
@@ -8,7 +10,10 @@ import (
 
 type UserRepository interface {
 	//Methods
-	GetAllUsers()
+	CreateUser(data entities.UserEntity) error
+	GetUserByID(id int) (entities.UserEntity, error)
+	UpdateUser(id int, data entities.UserEntity) error
+	DeleteUser(id int) error
 }
 
 type userRepository struct {
@@ -16,8 +21,40 @@ type userRepository struct {
 }
 
 // GetAllUsers implements UserRepository.
-func (u *userRepository) GetAllUsers() {
-	panic("unimplemented")
+func (u *userRepository) GetAllUsers(req middleware.PageQuery) (*middleware.PageQuery, []entities.UserEntity, error) {
+	var users []entities.UserEntity
+	var total int64
+
+	tx := u.db.Model(&entities.UserEntity{})
+
+	// Count total records
+	if err := tx.Count(&total).Error; err != nil {
+		return nil, nil, err
+	}
+
+	offset := utilities.CalculateOffset(req.Page, req.Limit)
+	limit := utilities.CalculatePageSize(total, req.Limit)
+
+	if req.Limit < -1 {
+		req.Limit = int(total)
+	}
+
+	if err := tx.Offset(offset).Limit(limit).Find(&users).Error; err != nil {
+		return nil, nil, err
+	}
+
+	if req.Limit == 0 {
+		limit = 0
+	}
+
+	query := &middleware.PageQuery{
+		TotalPages: limit,
+		TotalRows:  total,
+		Page:       req.Page,
+		Limit:      req.Limit,
+		Rows:       users,
+	}
+	return query, users, nil
 }
 func (u *userRepository) CreateUser(data entities.UserEntity) error {
 	tx := u.db.Begin()
@@ -30,6 +67,51 @@ func (u *userRepository) CreateUser(data entities.UserEntity) error {
 		tx.Rollback()
 		return err
 	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return nil
+}
+
+func (u *userRepository) GetUserByID(id int) (entities.UserEntity, error) {
+	var user entities.UserEntity
+	if err := u.db.First(&user, id).Error; err != nil {
+		return entities.UserEntity{}, err
+	}
+	return user, nil
+}
+
+func (u *userRepository) UpdateUser(id int, data entities.UserEntity) error {
+	tx := u.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := tx.Model(&entities.UserEntity{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return nil
+}
+
+func (u *userRepository) DeleteUser(id int) error {
+	tx := u.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := tx.Delete(&entities.UserEntity{}, id).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
 		return err
