@@ -12,7 +12,10 @@ env:
 jobs:
   build-and-push:
     name: 🛠️ Build and Push Docker Image
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout Code
