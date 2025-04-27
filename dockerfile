@@ -13,3 +13,19 @@ COPY . .
 
 # Build the application
 RUN go build -o /go/bin/app -v ./ .
+
+# Final Stage
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates tzdata
+
+WORKDIR /app
+
+COPY --from=builder /go/bin/app ./app
+COPY --from=builder /go/src/app/config.yaml ./config.yaml
+
+ENV TZ=Asia/Vientiane
+
+EXPOSE 3000
+
+ENTRYPOINT ["./app"]
