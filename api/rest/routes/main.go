@@ -13,3 +13,4 @@ func Setup(app *fiber.App, db *gorm.DB) {
 	NewUserRouter(api, db)
 
 }
+//update config
