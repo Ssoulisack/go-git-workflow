@@ -47,12 +47,15 @@ func NewEnv() *Env {
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// Read config from environment variable if it exists
+	// Read the configuration file
 	appConfigYaml := os.Getenv("APP_CONFIG_YAML")
 	if appConfigYaml != "" {
 		v.ReadConfig(strings.NewReader(appConfigYaml))
 	} else {
-		log.Fatal("APP_CONFIG_YAML is not set!")
+		err := v.ReadInConfig() // defaults to config.yaml
+		if err != nil {
+			log.Fatal("APP_CONFIG_YAML is not set and config file not found!")
+		}
 	}
 
 	// Proceed with unmarshalling and other steps
