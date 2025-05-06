@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"log"
+	"os"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -46,16 +47,19 @@ func NewEnv() *Env {
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// Read the configuration file
-	if err := v.ReadInConfig(); err != nil {
-		log.Fatal("Can't find the file .env : ", err)
+	// Read config from environment variable if it exists
+	appConfigYaml := os.Getenv("APP_CONFIG_YAML")
+	if appConfigYaml != "" {
+		v.ReadConfig(strings.NewReader(appConfigYaml))
+	} else {
+		log.Fatal("APP_CONFIG_YAML is not set!")
 	}
 
+	// Proceed with unmarshalling and other steps
 	var env Env
 	if err := v.Unmarshal(&env); err != nil {
 		log.Fatal("Environment can't be loaded: ", err)
 	}
-	EnvRunning(env.App.Env, env.App.Port)
 	return &env
 }
 
