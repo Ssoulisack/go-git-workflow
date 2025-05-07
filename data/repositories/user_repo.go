@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"go-fiber/api/rest/middleware"
 	"go-fiber/core/utilities"
 	"go-fiber/domain/entities"
@@ -12,6 +13,7 @@ type UserRepository interface {
 	//Methods
 	CreateUser(data entities.UserEntity) error
 	GetUserByID(id int) (entities.UserEntity, error)
+	GetAllUsers(req middleware.PageQuery) (*middleware.PageQuery, []entities.UserEntity, error)
 	UpdateUser(id int, data entities.UserEntity) error
 	DeleteUser(id int) error
 }
@@ -24,31 +26,36 @@ type userRepository struct {
 func (u *userRepository) GetAllUsers(req middleware.PageQuery) (*middleware.PageQuery, []entities.UserEntity, error) {
 	var users []entities.UserEntity
 	var total int64
+	var search string
+
+	if req.Search != "" {
+		search = fmt.Sprintf("name LIKE '%%%s%%' AND deleted_at IS NULL", req.Search)
+	}
 
 	tx := u.db.Model(&entities.UserEntity{})
 
 	// Count total records
-	if err := tx.Count(&total).Error; err != nil {
+	if err := tx.Count(&total).Where(search).Error; err != nil {
 		return nil, nil, err
 	}
 
 	offset := utilities.CalculateOffset(req.Page, req.Limit)
-	limit := utilities.CalculatePageSize(total, req.Limit)
+	totalPage := utilities.CalculatePageSize(total, req.Limit)
 
 	if req.Limit < -1 {
 		req.Limit = int(total)
 	}
 
-	if err := tx.Offset(offset).Limit(limit).Find(&users).Error; err != nil {
+	if err := tx.Offset(offset).Limit(req.Limit).Where(search).Find(&users).Error; err != nil {
 		return nil, nil, err
 	}
 
 	if req.Limit == 0 {
-		limit = 0
+		totalPage = 0
 	}
 
 	query := &middleware.PageQuery{
-		TotalPages: limit,
+		TotalPages: totalPage,
 		TotalRows:  total,
 		Page:       req.Page,
 		Limit:      req.Limit,

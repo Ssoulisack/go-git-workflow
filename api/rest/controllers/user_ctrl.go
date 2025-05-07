@@ -13,10 +13,29 @@ type UserCtrl interface {
 	//Methods
 	CreateUser(c *fiber.Ctx) error
 	GetUserByID(c *fiber.Ctx) error
+	GetAllUsers(c *fiber.Ctx) error
 }
 
 type userCtrl struct {
 	userSvc services.UserService
+}
+
+// GetAllUsers implements UserCtrl.
+func (u *userCtrl) GetAllUsers(c *fiber.Ctx) error {
+	// Parse query parameters
+	var pageQuery middleware.PageQuery
+	if err := c.QueryParser(&pageQuery); err != nil {
+		return middleware.ErrorBadRequest("Invalid query parameters")
+	}
+
+	// Call service to get all users
+	page, err := u.userSvc.GetAllUsers(pageQuery)
+	if err != nil {
+		//RETURN USE MIDDLEWARE
+		return middleware.NewErrorMessageResponse(c, err)
+	}
+
+	return middleware.NewSuccessResponse(c, page)
 }
 
 // CreateUser implements UserCtrl.
