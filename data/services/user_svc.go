@@ -1,6 +1,7 @@
 package services
 
 import (
+	"go-fiber/api/rest/middleware"
 	"go-fiber/core/utilities"
 	"go-fiber/data/repositories"
 	"go-fiber/domain/entities"
@@ -11,6 +12,7 @@ type UserService interface {
 	//Methods
 	CreateUser(data models.UserReq) error
 	GetUserByID(id int) (*models.UserRes, error)
+	GetAllUsers(req middleware.PageQuery) (*middleware.PageQuery, error)
 }
 
 type userService struct {
@@ -38,6 +40,25 @@ func (u *userService) GetUserByID(id int) (*models.UserRes, error) {
 	//convert entity to model
 	userModel := utilities.ConvertEntityToModel[entities.UserEntity, models.UserRes](user)
 	return &userModel, nil
+}
+
+// GetAllUsers implements UserService. use pagination
+func (u *userService) GetAllUsers(req middleware.PageQuery) (*middleware.PageQuery, error) {
+	//convert entity to model
+	page, users, err := u.userRepo.GetAllUsers(req)
+	if err != nil {
+		return nil,  err
+	}
+	//convert entity to model
+	userModels := utilities.ConvertEntitiesToModels[entities.UserEntity, models.UserRes](users)
+
+	if userModels == nil {
+		page.Rows = []models.UserRes{}
+	}
+
+	page.Rows = userModels
+
+	return page, nil
 }
 
 
