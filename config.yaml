@@ -1,19 +1,12 @@
 App:
-  port: 3000
-  env: dev
+  port:
 
 database:
-  dbhost: localhost
-  dbport: 5432
-  username: soulisack
-  password: 77477686
-  dbname: postgres
-# database:
-#   dbhost: 52.90.155.171
-#   dbport: 5432
-#   username: soulisack
-#   password: 77477686
-#   dbname: postgres
+  dbhost:
+  dbport:
+  username:
+  password:
+  dbname:
 
 file:
   host:
@@ -27,29 +20,5 @@ help:
   path_ip:
 
 jwt:
-  access_token: supersecretaccesstoken@32char
-  refresh_token: supersecretrefreshtoken@32char
-# App:
-#   port:
-
-# database:
-#   dbhost:
-#   dbport:
-#   username:
-#   password:
-#   dbname:
-
-# file:
-#   host:
-#   port:
-#   key:
-#   bucket:
-#   path_ip:
-
-# help:
-#   path_wa:
-#   path_ip:
-
-# jwt:
-#   access_token:
-#   refresh_token:
+  access_token:
+  refresh_token:

@@ -14,3 +14,4 @@ func Setup(app *fiber.App, db *gorm.DB) {
 
 }
 //update config
+//try 
