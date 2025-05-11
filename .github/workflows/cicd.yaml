@@ -2,7 +2,7 @@ name: Go CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     # tags: ['v*.*.*']
 
 env:
@@ -101,5 +101,5 @@ jobs:
             docker pull ${{ env.DOCKER_IMAGE }}:latest
             docker stop go-fiber || true
             docker rm go-fiber || true
-            docker run -d --name go-fiber -p 80:3000 ${{ env.DOCKER_IMAGE }}:latest
+            docker run -d --name go-fiber -p 3000:3000 ${{ env.DOCKER_IMAGE }}:latest
           EOF
