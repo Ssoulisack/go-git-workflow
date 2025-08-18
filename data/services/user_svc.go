@@ -44,6 +44,12 @@ func (u *userService) GetUserByID(id int) (*models.UserRes, error) {
 
 // GetAllUsers implements UserService. use pagination
 func (u *userService) GetAllUsers(req middleware.PageQuery) (*middleware.PageQuery, error) {
+	if req.Limit <=0 {
+		req.Limit = 10
+	}
+	if req.Page <=0 {
+		req.Page = 1
+	}
 	//convert entity to model
 	page, users, err := u.userRepo.GetAllUsers(req)
 	if err != nil {
