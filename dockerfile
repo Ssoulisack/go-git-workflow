@@ -21,11 +21,13 @@ RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /app
 
+RUN mkdir logs
+
 COPY --from=builder /go/bin/app ./app
 COPY --from=builder /go/src/app/config.yaml ./config.yaml
 
 ENV TZ=Asia/Vientiane
 
-EXPOSE 3000
-
+EXPOSE 3002
+LABEL Name=go-gitworkflow
 ENTRYPOINT ["./app"]

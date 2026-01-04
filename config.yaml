@@ -1,24 +1,14 @@
 App:
-  port:
+  port: 
 
 database:
-  dbhost:
-  dbport:
-  username:
-  password:
-  dbname:
-
-file:
-  host:
-  port:
-  key:
-  bucket:
-  path_ip:
-
-help:
-  path_wa:
-  path_ip:
+  dbhost: 
+  dbport: 
+  username: 
+  password: 
+  dbname: 
+  max_open_conns: 
 
 jwt:
-  access_token:
-  refresh_token:
+  access_token: 
+  refresh_token: 

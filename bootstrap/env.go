@@ -22,6 +22,7 @@ type Env struct {
 		Username string `mapstructure:"username"`
 		Password string `mapstructure:"password"`
 		DBName   string `mapstructure:"dbname"`
+		MaxOpenConns int `mapstructure:"max_open_conns"`
 	} `mapstructure:"database"`
 
 	Files struct {
